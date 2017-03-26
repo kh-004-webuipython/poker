@@ -130,7 +130,6 @@ class User extends React.Component {
         return (
             <div className="info-row">
                 <div className="col-md-8 info-name">{this.props.name}</div>
-
                 <div className="col-md-4 info-value">{this.props.vote === 'coffee' ? coffee: this.props.flip ? this.props.vote: this.props.vote? ok: '' }</div>
             </div> );
     }
@@ -141,47 +140,115 @@ class IssueBox extends React.Component {
     constructor() {
         super();
         this.state = {
-
-            // TODO Добавить сюда получение данных из сокета  на сокет
+            'currentSlide': 'active',
             'issueList': issueList
         };
     }
 
 
     render() {
-        return (
-            <div className="main-block col-md-9">
-                <div className="info info-striped">
-                    <div className="info-row">
-                        <div className="info-name">Issue on estimation:</div>
-                        <div className="info-value">{this.state.issueList[currentIssue].title}</div>
+        if (this.state.currentSlide == 'active') {
+        //current issue slide
+            return (
+                <div className="main-block col-md-9">
+                    <div className="info info-striped">
+                        <div className="info-row">
+                            <div className="info-name">Issue on estimation:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].title}</div>
+                        </div>
+                        <div className="info-row">
+                            <div className="info-name">Description:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].description}</div>
+                        </div>
                     </div>
-                    <div className="info-row">
-                        <div className="info-name">Description:</div>
-                        <div className="info-value">{this.state.issueList[currentIssue].description}</div>
+                    <div className="info-striped">
+                        <CardBox />
+                        <IssueNavbar activeSlide = {this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                     </div>
                 </div>
-                <div className="info-striped">
-                    <CardBox />
-                    <IssueNavbar />
-                </div>
+            );
+        }
+        if (this.state.currentSlide == 'accept') {
+        //current issue slide
+            return (
+                <div className="main-block col-md-9">
+                    <div className="info info-striped">
+                        <div className="info-row">
+                            <div className="info-name">Issue on estimation:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].title}</div>
+                        </div>
+                        <div className="info-row">
+                            <div className="info-name">Description:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].description}</div>
+                        </div>
+                    </div>
+                    <div className="info-striped">
+                        <CardBox />
+                        <IssueNavbar activeSlide = {this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
+                    </div>
 
-            </div>
-        );
+                </div>
+            );
+
+        }
+        if (this.state.currentSlide == 'completed') {
+        //current issue slide
+            return (
+                <div className="main-block col-md-9">
+                    <div className="info info-striped">
+                        <div className="info-row">
+                            <div className="info-name">Issue on estimation:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].title}</div>
+                        </div>
+                        <div className="info-row">
+                            <div className="info-name">Description:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].description}</div>
+                        </div>
+                    </div>
+                    <div className="info-striped">
+                        <CardBox />
+                        <IssueNavbar activeSlide = {this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
+                    </div>
+
+                </div>
+            );
+        }
+        if (this.state.currentSlide == 'all') {
+        //current issue slide
+            return (
+                <div className="main-block col-md-9">
+                    <div className="info info-striped">
+                        <div className="info-row">
+                            <div className="info-name">Issue on estimation:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].title}</div>
+                        </div>
+                        <div className="info-row">
+                            <div className="info-name">Description:</div>
+                            <div className="info-value">{this.state.issueList[currentIssue].description}</div>
+                        </div>
+                    </div>
+                    <div className="info-striped">
+                        <CardBox />
+                        <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
+                    </div>
+                </div>
+            );
+        }
+    }
+
+    _setSlide(slide) {
+        this.setState({'currentSlide': slide});
     }
 }
 
 
 class CardBox extends React.Component {
-
     constructor() {
         super();
         this.state = {
             'chosenCard': null,
         };
-
     }
-
 
     render() {
         let coffee = <i className="fa fa-coffee" aria-hidden="true"></i>;
@@ -211,14 +278,16 @@ class IssueNavbar extends React.Component {
     render() {
         return (
             <div className="issue-bar">
-                <button className="active">Active issue
-                </button>
-                <button className="completed">Completed issue
-                </button>
-                <button className="issue-list">All issue list
-                </button>
+                <button className={this._checkActiveBtn('active')} onClick = {this.props.setSlide.bind(this, 'active')}>Active issue</button>
+                <button className={this._checkActiveBtn('accept')} onClick = {this.props.setSlide.bind(this, 'accept')}>Accept vote</button>
+                <button className={this._checkActiveBtn('completed')} onClick = {this.props.setSlide.bind(this, 'completed')}>Completed issue</button>
+                <button className={this._checkActiveBtn('all')} onClick = {this.props.setSlide.bind(this, 'all')}>All issue list</button>
             </div>
         )
+    }
+     _checkActiveBtn(slide) {
+        console.log(slide, this.props.activeSlide);
+        return (slide == this.props.activeSlide) ? "btn btn-info" : "btn";
     }
 }
 
@@ -250,8 +319,8 @@ class CommentBox extends React.Component {
         socket.on('add_new_comment', newComment => {
             this.setState({comments: this.state.comments.concat([newComment])});
         });
-
     }
+
     _sendComment(user, body) {
         const comment = {
             id: this.state.comments.length + 1,
