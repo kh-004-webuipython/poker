@@ -56,15 +56,24 @@ state = {
         'issue_list': [
             {
                 'title': 'Fix Email Notification(Issues change)',
-                'description': 'Email notification has to work for: 1) Employee was assigned to the issue. 2) Employee that was assigned to the issue, now is not assigned to the issue. 3) If issue was changed in any way, it sends to assigned issue employee. if NOTHING is changed, do not send anything.',
+                'description': 'Email notification has to work for: 1) ' +
+                               'Employee was assigned to the issue. 2) ' +
+                               'Employee that was assigned to the issue, ' +
+                               'now is not assigned to the issue. 3) If ' +
+                               'issue was changed in any way, it sends to ' +
+                               'assigned issue employee. if NOTHING is ' +
+                               'changed, do not send anything.',
+                'estimation': 10,
             },
             {
                 'title': 'Profile access',
                 'description': 'Make access to user profile via dropdown(as it was before) and make it bigger',
+                'estimation':'',
             },
             {
                 'title': 'title3',
                 'description': 'description3',
+                'estimation':'',
             },
 
         ],
