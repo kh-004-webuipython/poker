@@ -33,6 +33,7 @@
 
 .main-block {
     display: block;
+    margin-bottom: 15px;
 }
 
 .comment-box {
@@ -116,7 +117,7 @@ div.comment-box div.comment :nth-child(even) {
 }
 
 .card:hover {
-    background-color: #aaadf4;
+    background-color: #c2c1f4;
 }
 
 .card-top-data {
@@ -131,12 +132,23 @@ div.comment-box div.comment :nth-child(even) {
     margin: 0 auto;
     border: 1px solid black;
     border-radius: 5px;
-    line-height: 100px;
+    line-height: 2.6;
     font-size: 36px;
 }
 
+.card-center-data .fa-coffee {
+    font-size: 1.6em;
+    line-height: 1.6;
+}
+
 .chosen {
-    background-color: #635ff4;
+    background-color: #7c8af4 !important;
+}
+
+.user-list > .info-row > .info-value > .fa {
+   position: absolute;
+    top: 0;
+    left: 33%;
 }
 
 .card-bottom-data {

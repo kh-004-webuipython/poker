@@ -94,10 +94,11 @@ class UserBox extends React.Component {
 
         return (
             <div className="user-box col-md-3 col-sm-2 pull-right">
-                <div className="user-list">
-                    <div className="col-md-4">Nickname</div>
-                    <div className="col-md-4">Role</div>
-                    <div className="col-md-4">Vote</div>
+                <div className="user-list info info-striped">
+                    <div className="info-row">
+                        <div className="col-md-8 info-name">Nickname</div>
+                        <div className="col-md-4 info-value">Vote</div>
+                    </div>
                     { users }
                 </div>
             </div> );
@@ -127,10 +128,10 @@ class User extends React.Component {
         let ok = <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>;
         let coffee = <i className="fa fa-coffee fa-2x" aria-hidden="true"></i>;
         return (
-            <div className="row">
-                <div className="col-md-4">{this.props.name}</div>
-                <div className="col-md-4">{this.props.role}</div>
-                <div className="col-md-4">{this.props.vote === 'coffee' ? coffee: this.props.flip ? this.props.vote: this.props.vote? ok: '' }</div>
+            <div className="info-row">
+                <div className="col-md-8 info-name">{this.props.name}</div>
+
+                <div className="col-md-4 info-value">{this.props.vote === 'coffee' ? coffee: this.props.flip ? this.props.vote: this.props.vote? ok: '' }</div>
             </div> );
     }
 }
@@ -160,10 +161,11 @@ class IssueBox extends React.Component {
                         <div className="info-value">{this.state.issueList[currentIssue].description}</div>
                     </div>
                 </div>
-                <div className="card-box">
+                <div className="info-striped">
                     <CardBox />
+                    <IssueNavbar />
                 </div>
-                <IssueNavbar />
+
             </div>
         );
     }
@@ -176,20 +178,20 @@ class CardBox extends React.Component {
         super();
         this.state = {
             'chosenCard': null,
-
         };
 
     }
 
 
     render() {
+        let coffee = <i className="fa fa-coffee" aria-hidden="true"></i>;
         return (<div>
             {
                 cardList.map((card, index) => {
                     return <div className={this.state.chosenCard == card ? 'chosen card': 'card'}
                                 data-card={card} key={index} onClick={this._sendEstimation.bind(this)}>
                         <div className="card-top-data">{card}</div>
-                        <div className="card-center-data">{card}</div>
+                        <div className="card-center-data">{card =='coffee'? coffee: card}</div>
                         <div className="card-bottom-data">{card}</div>
                     </div>
                 })
