@@ -1,4 +1,5 @@
 const USER = 'phobos';
+const USER_ID = 1;
 const ROOM = document.querySelector('body').dataset['room'];
 
 let userList = [];
@@ -18,6 +19,7 @@ socket.on('start_data', (data) => {
     userList = data.user_list;
     issueList = data.issue_list;
     chatLog = data.chat_log;
+    //console.log('Комменты: ', chatLog);
 
 
 
@@ -50,7 +52,7 @@ $(document).ready(function() {
 */
 
 
-let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffe'];
+let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
 // auto
 let status = {
     'flip': true,
@@ -75,35 +77,60 @@ class PokerBox extends React.Component {
 
 
 class UserBox extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            'userList': userList,
+            'flip': false
+        }
+    }
+    componentWillMount() {
+        this._changeUserStatus();
+    }
     render() {
         const users = this._getUsers();
+        /*<h4 className="user-count">{ userList.filter(x => x.online).length }
+                    user online</h4>*/
+
         return (
             <div className="user-box col-md-3 col-sm-2 pull-right">
-                <h4 className="user-count">{ userList.filter(x => x.online).length }
-                    user online</h4>
                 <div className="user-list">
+                    <div className="col-md-4">Nickname</div>
+                    <div className="col-md-4">Role</div>
+                    <div className="col-md-4">Vote</div>
                     { users }
                 </div>
             </div> );
     }
 
     _getUsers() {
-        return (userList.map(user => {
-                return <User name={user.name} role={user.role}
-                             online={user.online} choose={user.choose}
-                             key={user.id}/>
+        return (this.state.userList.map(user => {
+                return <User name={user.name} role={user.role} vote={user.current_vote}
+                             key={user.id} flip={this.state.flip} />
             })
         )
     };
+
+    _changeUserStatus() {
+        socket.on('make_vote', newUserList => {
+            console.log(newUserList);
+            this.setState({userList: newUserList});
+            if (newUserList.filter(x => x.current_vote).length == newUserList.length) {
+                this.setState({'flip': true});
+            }
+        });
+    }
 }
 
 class User extends React.Component {
     render() {
+        let ok = <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>;
+        let coffee = <i className="fa fa-coffee fa-2x" aria-hidden="true"></i>;
         return (
-            <div className="user">
-                <p>{this.props.name}</p>
-                <p>{this.props.role}</p>
-                <p>{this.props.choose}</p>
+            <div className="row">
+                <div className="col-md-4">{this.props.name}</div>
+                <div className="col-md-4">{this.props.role}</div>
+                <div className="col-md-4">{this.props.vote === 'coffee' ? coffee: this.props.flip ? this.props.vote: this.props.vote? ok: '' }</div>
             </div> );
     }
 }
@@ -144,11 +171,23 @@ class IssueBox extends React.Component {
 
 
 class CardBox extends React.Component {
+
+    constructor() {
+        super();
+        this.state = {
+            'chosenCard': null,
+
+        };
+
+    }
+
+
     render() {
         return (<div>
             {
                 cardList.map((card, index) => {
-                    return <div className="card" key={index}>
+                    return <div className={this.state.chosenCard == card ? 'chosen card': 'card'}
+                                data-card={card} key={index} onClick={this._sendEstimation.bind(this)}>
                         <div className="card-top-data">{card}</div>
                         <div className="card-center-data">{card}</div>
                         <div className="card-bottom-data">{card}</div>
@@ -157,6 +196,13 @@ class CardBox extends React.Component {
             }
         </div>)
     }
+
+    _sendEstimation(event) {
+        let card = event.currentTarget.dataset['card'];
+        this.setState({chosenCard: card});
+        socket.emit('make_vote', {'user_id': USER_ID, 'card': card});
+    }
+
 }
 
 class IssueNavbar extends React.Component {
@@ -188,6 +234,7 @@ class CommentBox extends React.Component {
     }
 
     render() {
+
         let comments = this._getComments();
         return (
             <div className="col-md-12 col-sm-10">
@@ -198,7 +245,7 @@ class CommentBox extends React.Component {
     }
 
     _addNewComment() {
-        socket.on('addNewComment', newComment => {
+        socket.on('add_new_comment', newComment => {
             this.setState({comments: this.state.comments.concat([newComment])});
         });
 
@@ -209,7 +256,7 @@ class CommentBox extends React.Component {
             user,
             body
         };
-        socket.emit('addComment', comment);
+        socket.emit('add_comment', comment);
     }
 
     _getComments() {

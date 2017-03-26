@@ -36,20 +36,20 @@ state = {
                 'id': 1,
                 'name': 'phobos',
                 'role': 'developer',
-                'choose': 15
+                'current_vote': ''
             },
             {
                 'id': 2,
                 'name': 'scrum_name',
                 'role': 'scrum',
-                'choose': 10
+                'current_vote': ''
             },
 
             {
                 'id': 3,
                 'name': 'PO',
                 'role': 'PO',
-                'choose': 5
+                'current_vote': ''
             },
 
         ],
@@ -72,16 +72,14 @@ state = {
             {
                 'id': 1,
                 'user': 'phobos',
-                'body': ' the issue. 2) Employee that was assigned to the issu'
+                'body': ' xxxxxxxxxxxxx'
             },
             {
                 'id': 2,
                 'user': 'scrum',
-                'body': 'tion(Issues change), escriptionEmail otification has to work for: 1'
+                'body': 'zzzzzzzz'
             },
         ]
-
-
 
     },
 }
@@ -91,12 +89,21 @@ def handle_connect():
     emit('start_data', state['room_500'])
 
 
-@socketio.on('addComment')
+@socketio.on('add_comment')
 def handle_add_comment(comment_obj):
     comment_obj['id'] = len(state['room_500']['chat_log']) + 1
-    state['room_500']['chat_log'].append([comment_obj])
-    emit('addNewComment', comment_obj, broadcast=True)
+    state['room_500']['chat_log'].append(comment_obj)
+    emit('add_new_comment', comment_obj, broadcast=True)
 
+
+@socketio.on('make_vote')
+def handle_vote(vote_obj):
+    users = state['room_500']['user_list']
+    for user in users:
+        if user['id'] == vote_obj['user_id']:
+            user['current_vote'] = vote_obj['card']
+            print user['current_vote']
+    emit('make_vote', users, broadcast=True)
 
 
 """
