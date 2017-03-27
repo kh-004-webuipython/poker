@@ -16,11 +16,17 @@
 }
 
 .user-box {
-    max-height: 500px;
+    height: 490px;
     margin: 0;
     padding: 25px;
     width: auto;
+    border: 1px solid lightsteelblue;
     overflow-y: auto;
+}
+
+.chat-box {
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
 }
 
 .user-list {
@@ -31,7 +37,10 @@
 .main-block {
     display: block;
     height: 490px;
-    margin-bottom: 15px;
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .comment-box {
@@ -85,7 +94,6 @@ div.comment-box div.comment :nth-child(even) {
     background-color: transparent;
     border-top: 1px dotted #D5E4F1;
     display: table-cell;
-    width: 25%;
     vertical-align: middle;
 }
 
@@ -94,6 +102,7 @@ div.comment-box div.comment :nth-child(even) {
     width: 75%;
     padding: 6px 4px 6px 6px;
     border-top: 1px dotted #D5E4F1;
+    border-left: 1px dotted #D5E4F1;
 }
 
 
@@ -155,8 +164,8 @@ div.comment-box div.comment :nth-child(even) {
     font-size: 14px;
 }
 
-.no-float {
-    float: none !important;
+.flex {
+    display: flex;
 }
 
 .issue-bar {

@@ -19,41 +19,21 @@ socket.on('start_data', (data) => {
     userList = data.user_list;
     issueList = data.issue_list;
     chatLog = data.chat_log;
-    //console.log('Комменты: ', chatLog);
 
+    //*********************************
+    // Определиться с дизайном естимейшен аксепт
+    // написать функцию резет воута, которая будет использоваться при повторном голосвании и успешном сохранении сервером естимешена
+    // accept, reset, skip
+    // поставить вебсокет на новые колеса: gevent + gunicorn + Nginx
+    // настроить фласк в облаке
 
-
-
-
-
-/*
-var socket = io.connect('http://localhost');
-socket.on('news', function (data) {
-  console.log(data);
-  socket.emit('my other event', { my: 'data' });
-});
-
-
-$(document).ready(function() {
-	var socket = io.connect('http://127.0.0.1:5000');
-	socket.on('connect', function() {
-		socket.send('User has connected!');
-	});
-	socket.on('message', function(msg) {
-		$("#messages").append('<li>'+msg+'</li>');
-		console.log('Received message');
-	});
-	$('#sendbutton').on('click', function() {
-		socket.send($('#myMessage').val());
-		$('#myMessage').val('');
-	});
-});
-
-*/
+    // добавить авторизацию
+    // добавить румы
+    // прикрутить ДБ в которую будет записываться рума и потом в нее будут добавляться/удаляться ишью
+    // добавить очистку "состояния румы", если из нее все вышли
 
 
 let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
-// auto
 let status = {
     'flip': true,
 };
@@ -145,7 +125,6 @@ class IssueBox extends React.Component {
         };
     }
 
-
     render() {
         if (this.state.currentSlide == 'active') {
         //current issue slide
@@ -161,7 +140,7 @@ class IssueBox extends React.Component {
                             <div className="info-value">{this.state.issueList[this.state.currentIssue].description}</div>
                         </div>
                     </div>
-                    <div className="info-striped"><CardBox vote={this.state.vote} saveVote={this._setVote.bind(this)} /></div>
+                    <CardBox vote={this.state.vote} saveVote={this._setVote.bind(this)} />
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
             );
@@ -190,14 +169,13 @@ class IssueBox extends React.Component {
             console.log(issueList);
             return (
                 <div className="main-block col-md-9">
-                <p>Issue with estimation</p>
                 {
                 this.state.issueList.filter(x=>x['estimation']).map((issue, index) => {
                 return (<div className="info info-striped" key={index}>
-                    <div className="info-row">
-                        <div className="info-name col-md-1 no-float">{index}</div>
-                        <div className="info-value col-md-3">{issue.title}</div>
-                        <div className="info-value col-md-7">{issue.description}</div>
+                    <div className="info-row flex">
+                        <div className="info-name col-md-1">{index}</div>
+                        <div className="info-value col-md-2">{issue.title}</div>
+                        <div className="info-value col-md-8">{issue.description}</div>
                         <div className="info-value col-md-1">{issue.estimation}</div>
                     </div>
                     </div>)
@@ -211,18 +189,18 @@ class IssueBox extends React.Component {
         if (this.state.currentSlide == 'all') {
         //current issue slide
             return (<div className="main-block col-md-9">
-                <p>All issue</p>
+                <div className="info info-striped">
                 {
                 this.state.issueList.map((issue, index) => {
-                return (<div className="info info-striped" key={index}>
-                    <div className="info-row">
-                        <div className="info-name col-md-1 no-float">{index}</div>
-                        <div className="info-value col-md-3">{issue.title}</div>
-                        <div className="info-value col-md-8">{issue.description}</div>
-                    </div>
+                return (<div className="info-row flex" key={index}>
+                    <div className="info-name col-md-1">{index}</div>
+                    <div className="info-value col-md-2">{issue.title}</div>
+                    <div className="info-value col-md-8">{issue.description}</div>
+                    <div className="info-value col-md-1">{issue.estimation}</div>
                     </div>)
                 })
                 }
+                </div>
                 <div>
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
@@ -242,7 +220,6 @@ class IssueBox extends React.Component {
 
 
 class CardBox extends React.Component {
-
     render() {
         let coffee = <i className="fa fa-coffee" aria-hidden="true"></i>;
         return (<div>
@@ -267,6 +244,7 @@ class CardBox extends React.Component {
 
 }
 
+
 class IssueNavbar extends React.Component {
     render() {
         return (
@@ -285,7 +263,6 @@ class IssueNavbar extends React.Component {
 
 
 class CommentBox extends React.Component {
-
     constructor() {
         super();
         this.state = {
@@ -297,10 +274,9 @@ class CommentBox extends React.Component {
     }
 
     render() {
-
         let comments = this._getComments();
         return (
-            <div className="col-md-12 col-sm-10">
+            <div className="col-md-12 col-sm-10 chat-box">
                 <CommentForm addComment={this._sendComment.bind(this)}/>
                 <div className="comment-box"> { comments } </div>
             </div>
@@ -332,7 +308,6 @@ class CommentBox extends React.Component {
             );
         });
     };
-
 }
 
 

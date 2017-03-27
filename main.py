@@ -55,6 +55,7 @@ state = {
         ],
         'issue_list': [
             {
+                'id': 1,
                 'title': 'Fix Email Notification(Issues change)',
                 'description': 'Email notification has to work for: 1) ' +
                                'Employee was assigned to the issue. 2) ' +
@@ -66,11 +67,13 @@ state = {
                 'estimation': 10,
             },
             {
+                'id': 2,
                 'title': 'Profile access',
                 'description': 'Make access to user profile via dropdown(as it was before) and make it bigger',
                 'estimation':'',
             },
             {
+                'id': 3,
                 'title': 'title3',
                 'description': 'description3',
                 'estimation':'',
@@ -96,6 +99,7 @@ state = {
 @socketio.on('connect')
 def handle_connect():
     emit('start_data', state['room_500'])
+    #Add event to clear room, when no one online
 
 
 @socketio.on('add_comment')
@@ -111,8 +115,22 @@ def handle_vote(vote_obj):
     for user in users:
         if user['id'] == vote_obj['user_id']:
             user['current_vote'] = vote_obj['card']
-            print user['current_vote']
     emit('make_vote', users, broadcast=True)
+
+
+@socketio.on('accept_estimation')
+def handle_accept(accept_obj):
+    issues = state['room_500']['issue_list']
+    # MAKE REST TO DJANGO AND ON success:
+        # DELETE ISSUE IN OUR DB
+    for issue in issues:
+        if issue['id'] == accept_obj['id']:
+            issue['estimation'] = accept_obj['estimation']
+    [x.__setattr__('current_vote', '') for x in state['room_500']['user_list']]
+    """for user in users:
+        user['current_vote'] = ''
+        """
+    emit('reset_vote_and_update_Issue', issue, broadcast=True)
 
 
 """
