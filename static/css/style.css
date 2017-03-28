@@ -39,9 +39,18 @@
     height: 490px;
     padding-top: 15px;
     border: 1px solid lightsteelblue;
+}
+
+.overflow {
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+.info.info-striped.overflow {
+    display: inline-block;
+    height: 100px !important;
+}
+
 
 .comment-box {
     height: 350px;
