@@ -1,0 +1,190 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    border-radius: 0;
+}
+.profile {
+    float: right;
+    padding: 0 20px;
+    background-color: beige;
+}
+
+#poker-app {
+    text-align: center;
+}
+
+.user-box {
+    height: 490px;
+    margin: 0;
+    padding: 25px;
+    width: auto;
+    border: 1px solid lightsteelblue;
+    overflow-y: auto;
+}
+
+.chat-box {
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
+}
+
+.user-list {
+    display: table-cell;
+    text-align: center;
+}
+
+.main-block {
+    display: block;
+    height: 490px;
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
+}
+
+.overflow {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.info.info-striped.overflow {
+    display: inline-block;
+    height: 100px !important;
+}
+
+
+.comment-box {
+    height: 350px;
+    overflow-y: auto;
+}
+.comment > p {
+    margin: 0;
+}
+
+.comment {
+    min-height: 15px;
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+}
+
+div.comment-box div.comment :nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+.comment :first-child {
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.current-issue {
+    min-height: 300px;
+}
+
+.info {
+    display: table;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.info-striped {
+    border: 1px solid #DCEBF7;
+}
+
+.info-row {
+    display: table-row;
+    padding: 0;
+}
+
+.info-name {
+    text-align: right;
+    padding: 6px 10px 6px 4px;
+    font-weight: normal;
+    color: #667E99;
+    background-color: transparent;
+    border-top: 1px dotted #D5E4F1;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.info-value {
+    display: table-cell;
+    width: 75%;
+    padding: 6px 4px 6px 6px;
+    border-top: 1px dotted #D5E4F1;
+    border-left: 1px dotted #D5E4F1;
+}
+
+
+.info-striped .info-name {
+    color: #336199;
+    background-color: #EDF3F4;
+    border-top: 1px solid #F7FBFF;
+}
+
+.card {
+    display: inline-block;
+    width: 110px;
+    height: 150px;
+    margin: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #EDF3F4;
+}
+
+.card:hover {
+    background-color: #c2c1f4;
+}
+
+.card-top-data {
+    text-align: left;
+    font-size: 14px;
+}
+
+.card-center-data {
+    display: block;
+    height: 100px;
+    width: 80px;
+    margin: 0 auto;
+    border: 1px solid black;
+    border-radius: 5px;
+    line-height: 2.6;
+    font-size: 36px;
+}
+
+.card-center-data .fa-coffee {
+    font-size: 1.6em;
+    line-height: 1.6;
+}
+
+.chosen {
+    background-color: #7c8af4 !important;
+}
+
+.user-list > .info-row > .info-value > .fa {
+   position: absolute;
+    top: 0;
+    left: 33%;
+}
+
+.card-bottom-data {
+    text-align: right;
+    bottom: 0;
+    font-size: 14px;
+}
+
+.flex {
+    display: flex;
+}
+
+.issue-bar {
+    position: absolute;
+    bottom: 0;
+    height: 30px;
+    width: 100%;
+    margin: 5px 0;
+}
+
+.form-control, .btn {
+    border-radius: 0 !important;
+}
