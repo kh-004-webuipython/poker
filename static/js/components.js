@@ -1,7 +1,8 @@
 //const USER = 'phobos';
 //const USER_ID = 1;
 const USER_ID = Number(prompt());
-const ROOM = document.querySelector('body').dataset['room'];
+//const ROOM = document.querySelector('body').dataset['room'];
+let ROOM = '';
 const USER = USER_ID;
 let startUserList = [];
 let startIssueList = [];
@@ -13,29 +14,28 @@ function isNumber(n) {
 
 
 
-/*
 if (location.pathname.substr(1,4) === 'room') {
-    //ROOM = location.pathname.replace(/^\/room\/|\/$/g, '')
+    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
 }
-*/
+
 let socket = io.connect('http://127.0.0.1:5000');
-socket.on('connect', () => socket.send('User has connected!') );
+socket.on('connect', () => socket.emit('join',{'room': ROOM}));
+
 
 socket.on('start_data', (data) => {
     startUserList = data.user_list;
     startIssueList = data.issue_list;
     chatLog = data.chat_log;
     console.log(startUserList);
-    let startIssue = 0;
-let startFlip = (() => {
-	for (var i = 0; i < startUserList.length; i++) {
-		if (startUserList[i].current_vote === '') {
-			return false;
-		}
-	}
-	return true;
-}) ();
-console.log(startFlip, startUserList);
+    let startFlip = (() => {
+    	for (var i = 0; i < startUserList.length; i++) {
+    		if (startUserList[i].current_vote === '') {
+    			return false;
+    		}
+    	}
+    	return true;
+    }) ();
+
     //*********************************
     // поднять на уровень выше юзелист и флип
     // Определиться с дизайном естимейшен аксепт
@@ -143,7 +143,7 @@ class IssueBox extends React.Component {
             'currentIssue': startIssueList.filter(x=>x.estimation === '')[0],
             'currentSlide': 'active',
             'issueList': startIssueList,
-            'vote': startUserList.find(x=>x.id=USER_ID)['current_vote'],
+            'vote': startUserList.find(x=>x.id==USER_ID)['current_vote'],
             'flip': startFlip,
         };
         this._userList = startUserList;
@@ -283,8 +283,9 @@ class IssueBox extends React.Component {
 
             if (isNumber(this._userList[0].current_vote)) {
                 console.log('vote');
-                let  issue = this.state.currentIssue;
-                socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': this._userList[0].current_vote});
+                let issue = this.state.currentIssue;
+                let vote = this._userList[0].current_vote
+                socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': vote, 'room': ROOM});
             }
         } else {
             alert('Sorry, you can not set estimation on issue before all teammates make vote!')
@@ -292,11 +293,11 @@ class IssueBox extends React.Component {
     }
 
     _estimationReset() {
-        socket.emit('reset_estimation');
+        socket.emit('reset_estimation', {'room': ROOM});
     }
 
     _estimationSkip() {
-        socket.emit('skip_estimation');
+        socket.emit('skip_estimation', {'room': ROOM});
     }
 
     _changeUserStatus() {
@@ -306,39 +307,34 @@ class IssueBox extends React.Component {
             if (newUserList.filter(x => x.current_vote).length == newUserList.length) {
                 this.setState({'flip': true});
                 this.setState({'currentSlide': 'accept'});
-                console.log('set_true_flip');
-            } /*else {
+            } else {
                 this.setState({'flip': false});
-                console.log('set_false_flip');
-            }*/
+            }
         });
 
 
         socket.on('issue_was_estimated', (data)=> {
             let nextSecIssue = () => this.state.issueList.filter(issue => issue.estimation === '')[1];
             this._userList = data.users;
-            this.setState({'flip': false, 'currentIssue': nextSecIssue(), 'issueList': data.issues});
-            console.log(this.state.flip, this._userList, this.state.currentIssue);
+            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues});
         });
 
 
         socket.on('skip_estimation', (users)=> {
             let nextSecIssue = () => this.state.issueList.filter(issue => issue.estimation === '')[1];
             this._userList = users;
-            this.setState({'flip': false, 'currentIssue': nextSecIssue()});
-            console.log(this.state.flip, this._userList);
+            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('skip')});
         });
 
         socket.on('reset_estimation', (users)=> {
             this._userList = users;
-            this.setState({'flip': false});
-            console.log(this.state.flip, this._userList);
-
+            this.setState({'flip': false, 'currentSlide': 'active'});
+            console.log('___RESET___');
         });
     }
 
     //TODO: применить функцию
-    _nextIssue(param) {
+    _next(param) {
         let noEstimatedIssue = this.state.issueList.filter(issue => issue.estimation === '');
         if(param === 'start') {
             return noEstimatedIssue[0]
@@ -348,11 +344,17 @@ class IssueBox extends React.Component {
             return noEstimatedIssue[1]
         }
         if (param === 'skip') {
-            if (noEstimatedIssue.length > 1) {
-                return noEstimatedIssue[1]
-            } else {
-                return noEstimatedIssue[0]
-            }
+            /*console.log(
+                '1)', noEstimatedIssue,
+                '2)', noEstimatedIssue.indexOf(this.state.currentIssue),
+                '3)', this.state.currentIssue
+
+            );
+            let position = noEstimatedIssue.indexOf(this.state.currentIssue);
+            if (noEstimatedIssue[position+1]) {
+                return noEstimatedIssue[position+1]
+            }*/
+            return noEstimatedIssue[0]
         }
     }
 
@@ -380,7 +382,7 @@ class CardBox extends React.Component {
         if (!this.props.flip) {
 	        let card = event.currentTarget.dataset['card'];
 	        this.props.saveVote(card);
-	        socket.emit('make_vote', {'user_id': USER_ID, 'card': card});
+	        socket.emit('make_vote', {'user_id': USER_ID, 'card': card, 'room': ROOM});
         }
     }
 
@@ -433,11 +435,7 @@ class CommentBox extends React.Component {
     }
 
     _sendComment(user, body) {
-        const comment = {
-            user,
-            body
-        };
-        socket.emit('add_comment', comment);
+        socket.emit('add_comment', {user, body, 'room': ROOM});
     }
 
     _getComments() {
