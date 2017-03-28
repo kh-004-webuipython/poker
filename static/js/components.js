@@ -26,7 +26,6 @@ socket.on('start_data', (data) => {
     startUserList = data.user_list;
     startIssueList = data.issue_list;
     chatLog = data.chat_log;
-    console.log(startUserList);
     let startFlip = (() => {
     	for (var i = 0; i < startUserList.length; i++) {
     		if (startUserList[i].current_vote === '') {
@@ -92,7 +91,7 @@ class UserBox extends React.Component {
             <div className="user-box col-md-3 col-sm-2 pull-right">
                 <div className="user-list info info-striped">
                     <div className="info-row">
-                        <div className="col-md-8 info-name">Nickname</div>
+                        <div className="col-md-8 info-name">Teammates</div>
                         <div className="col-md-4 info-value">Vote</div>
                     </div>
                     { users }
@@ -111,14 +110,25 @@ class UserBox extends React.Component {
     _changeUserStatus() {
         socket.on('make_vote', newUserList => {
             this.setState({userList: newUserList});
-            console.log('make_vote');
             if (newUserList.filter(x => x.current_vote).length == newUserList.length) {
                 this.setState({'flip': true});
-                console.log('set_true_flip');
             } else {
                 this.setState({'flip': false});
-                console.log('set_false_flip');
             }
+        });
+
+        socket.on('issue_was_estimated', (data)=> {
+            this.setState({'flip': false, userList: data.users});
+        });
+
+        socket.on('skip_estimation', (users)=> {
+            this._userList = users;
+            this.setState({'flip': false, userList: users});
+        });
+
+        socket.on('reset_estimation', (users)=> {
+            this._userList = users;
+            this.setState({'flip': false, userList: users});
         });
     }
 }
@@ -147,7 +157,6 @@ class IssueBox extends React.Component {
             'flip': startFlip,
         };
         this._userList = startUserList;
-
     }
 
     componentWillMount() {
@@ -199,7 +208,6 @@ class IssueBox extends React.Component {
                     <IssueNavbar activeSlide = {this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
             );
-
         }
 
 
@@ -257,12 +265,10 @@ class IssueBox extends React.Component {
 
     _setSlide(slide) {
         this.setState({'currentSlide': slide});
-        console.log('set_slide');
     }
 
     _setVote(vote) {
         this.setState({vote});
-        console.log('set_vote');
     }
 
     _checkBtn(btn) {
@@ -275,14 +281,12 @@ class IssueBox extends React.Component {
         if (this.state.flip) {
             for(let i = 1; i < this._userList.length; i++) {
 	            if (this._userList[i - 1].current_vote !== this._userList[i].current_vote) {
-	                console.log(this._userList);
 		            alert('Sorry, you can not set estimation on issue when teammates have made different votes!');
 		            return
 	            }
             }
 
             if (isNumber(this._userList[0].current_vote)) {
-                console.log('vote');
                 let issue = this.state.currentIssue;
                 let vote = this._userList[0].current_vote
                 socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': vote, 'room': ROOM});
@@ -303,7 +307,6 @@ class IssueBox extends React.Component {
     _changeUserStatus() {
         socket.on('make_vote', newUserList => {
             this._userList = newUserList;
-            console.log('make_vote');
             if (newUserList.filter(x => x.current_vote).length == newUserList.length) {
                 this.setState({'flip': true});
                 this.setState({'currentSlide': 'accept'});
@@ -314,14 +317,12 @@ class IssueBox extends React.Component {
 
 
         socket.on('issue_was_estimated', (data)=> {
-            let nextSecIssue = () => this.state.issueList.filter(issue => issue.estimation === '')[1];
             this._userList = data.users;
             this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues});
         });
 
 
         socket.on('skip_estimation', (users)=> {
-            let nextSecIssue = () => this.state.issueList.filter(issue => issue.estimation === '')[1];
             this._userList = users;
             this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('skip')});
         });
@@ -329,31 +330,24 @@ class IssueBox extends React.Component {
         socket.on('reset_estimation', (users)=> {
             this._userList = users;
             this.setState({'flip': false, 'currentSlide': 'active'});
-            console.log('___RESET___');
         });
     }
 
-    //TODO: применить функцию
     _next(param) {
         let noEstimatedIssue = this.state.issueList.filter(issue => issue.estimation === '');
-        if(param === 'start') {
-            return noEstimatedIssue[0]
-        }
-
+        let position = noEstimatedIssue.indexOf(this.state.currentIssue);
         if (param === 'save') {
-            return noEstimatedIssue[1]
+            if (noEstimatedIssue[position + 1]) {
+                return noEstimatedIssue[position + 1]
+            }
+            if (noEstimatedIssue.length > 1 ) {
+                return noEstimatedIssue[0]
+            }
         }
         if (param === 'skip') {
-            /*console.log(
-                '1)', noEstimatedIssue,
-                '2)', noEstimatedIssue.indexOf(this.state.currentIssue),
-                '3)', this.state.currentIssue
-
-            );
-            let position = noEstimatedIssue.indexOf(this.state.currentIssue);
-            if (noEstimatedIssue[position+1]) {
-                return noEstimatedIssue[position+1]
-            }*/
+            if (noEstimatedIssue[position + 1]) {
+                return noEstimatedIssue[position + 1]
+            }
             return noEstimatedIssue[0]
         }
     }
@@ -429,7 +423,6 @@ class CommentBox extends React.Component {
 
     _addNewComment() {
         socket.on('add_new_comment', newComment => {
-            console.log('add_new_comment');
             this.setState({comments: this.state.comments.concat([newComment])});
         });
     }
