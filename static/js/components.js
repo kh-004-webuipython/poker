@@ -11,16 +11,12 @@ function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-
-
-
 if (location.pathname.substr(1,4) === 'room') {
     ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
 }
 
 let socket = io.connect('http://127.0.0.1:5000');
 socket.on('connect', () => socket.emit('join',{'room': ROOM}));
-
 
 socket.on('start_data', (data) => {
     startUserList = data.user_list;
@@ -85,7 +81,7 @@ class UserBox extends React.Component {
     render() {
         const users = this._getUsers();
         /*<h4 className="user-count">{ userList.filter(x => x.online).length }
-                    user online</h4>*/
+        user online</h4>*/
 
         return (
             <div className="user-box col-md-3 col-sm-2 pull-right">
@@ -132,6 +128,7 @@ class UserBox extends React.Component {
         });
     }
 }
+
 
 class User extends React.Component {
     render() {
@@ -183,6 +180,7 @@ class IssueBox extends React.Component {
                 </div>
             );
         }
+
         if (this.state.currentIssue && this.state.currentSlide == 'accept') {
         //current issue slide
             return (
@@ -210,10 +208,6 @@ class IssueBox extends React.Component {
             );
         }
 
-
-        // аксепт: сенд дату + редирект вкладки
-        // резет: сенд резет + редирект вкладки
-        // скип: сенд резет + редирект
         if (this.state.currentSlide == 'completed') {
         //current issue slide
             return (
@@ -233,6 +227,7 @@ class IssueBox extends React.Component {
                 <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
              </div>)
         }
+
         if (this.state.currentSlide == 'all') {
         //current issue slide
             return (<div className="main-block col-md-9 overflow">
@@ -315,12 +310,10 @@ class IssueBox extends React.Component {
             }
         });
 
-
         socket.on('issue_was_estimated', (data)=> {
             this._userList = data.users;
             this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues});
         });
-
 
         socket.on('skip_estimation', (users)=> {
             this._userList = users;
@@ -351,7 +344,6 @@ class IssueBox extends React.Component {
             return noEstimatedIssue[0]
         }
     }
-
 }
 
 
@@ -379,7 +371,6 @@ class CardBox extends React.Component {
 	        socket.emit('make_vote', {'user_id': USER_ID, 'card': card, 'room': ROOM});
         }
     }
-
 }
 
 
@@ -466,7 +457,6 @@ class CommentForm extends React.Component {
             this.props.addComment(USER, body);
         this._body.value = '';
         }
-
     }
 }
 
@@ -474,10 +464,10 @@ class CommentForm extends React.Component {
 class Comment extends React.Component {
     render() {
         return (
-            <div className="comment">
-                <p>{this.props.user}</p>
-                <p>{this.props.body}</p>
-            </div> );
+        <div className="comment">
+            <p>{this.props.user}</p>
+            <p>{this.props.body}</p>
+        </div> );
     }
 }
 
