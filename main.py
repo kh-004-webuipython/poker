@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, jsonify, redirect
-from flask_socketio import SocketIO, send, emit, join_room, leave_room, rooms
+from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
 from flask_pymongo import PyMongo
 from random import choice
 
@@ -20,6 +20,8 @@ socketio = SocketIO(app)
 
 def create_room_db(issue_json):
     room = room_db.db.rooms
+    for issue in issue_json:
+        issue['estimation'] = ''
     try:
         q = room.find_one({'project_id': int(issue_json["project_id"])})
     except Exception:
@@ -60,6 +62,7 @@ def read_room_db(project_id):
         }
     except Exception:
         print ("Can't read database")
+        disconnect()
     return True
 
 # global room
@@ -75,7 +78,6 @@ def main_room_page(room_name=None):
     # get name of user from request
     name_list = ['egepsihora', 'gnom', 'irena']
     user_name = choice(name_list)
-
     return render_template('index.html', room_name=room_name,
                            user_name=user_name)
 
@@ -108,13 +110,16 @@ def on_join(data):
     # if user in team:
     join_room(room)
     read_room_db(room)
+    # drop user on bad DB request
+    if (not state[room]):
+        disconnect()
     emit('start_data', state[room])
     comment = dict()
     comment['id'] = len(state[room]['chat_log']) + 1
     comment['body'] = 'user' + ' has entered the room.'
     comment['user'] = 'Server'
     state[room]['chat_log'].append(comment)
-    emit('add_new_comment', comment, room=str(room))
+    emit('add_new_comment', comment, room=room)
 
 
 @socketio.on('leave')
@@ -123,7 +128,7 @@ def on_leave(data):
     #username = data['username']
     room = int(data['room'])
     leave_room(room)
-    send('user has left the room.', room=str(room))
+    send('user has left the room.', room=room)
 
 
 # state = {
@@ -196,7 +201,7 @@ def handle_add_comment(data):
     comment['body'] = data['body']
     comment['user'] = data['user']
     state[room]['chat_log'].append(comment)
-    emit('add_new_comment', comment, room=str(room))
+    emit('add_new_comment', comment, room=room)
 
 
 @socketio.on('make_vote')
@@ -206,7 +211,7 @@ def handle_vote(data):
     for user in users:
         if user['id'] == int(data['user_id']):
             user['current_vote'] = data['card']
-    emit('make_vote', users, room=str(room))
+    emit('make_vote', users, room=room)
 
 
 @socketio.on('accept_estimation')
@@ -226,7 +231,7 @@ def handle_accept(data):
     new_users = state[room]['user_list']
     new_issues = state[room]['issue_list']
     emit('issue_was_estimated', {'users': new_users, 'issues': new_issues},
-         room=str(room))
+         room=room)
 
 
 @socketio.on('reset_estimation')
@@ -235,7 +240,7 @@ def handle_reset_estimation(data):
     users = state[room]['user_list']
     for user in users:
         user['current_vote'] = ''
-    emit('reset_estimation', users, room=str(room))
+    emit('reset_estimation', users, room=room)
 
 
 @socketio.on('skip_estimation')
@@ -244,7 +249,7 @@ def handle_skip_estimation(data):
     users = state[room]['user_list']
     for user in users:
         user['current_vote'] = ''
-    emit('skip_estimation', users, room=str(room))
+    emit('skip_estimation', users, room=room)
 
 
 if __name__ == '__main__':
