@@ -14,9 +14,8 @@ app.config.from_envvar('POKER_SETTINGS', silent=True)
 
 
 room_db = PyMongo(app)
-
 socketio = SocketIO(app)
-
+state = dict()
 
 def create_room_db(issue_json):
     room = room_db.db.rooms
@@ -109,7 +108,10 @@ def on_join(data):
     room = int(data['room'])
     # if user in team:
     join_room(room)
-    read_room_db(room)
+    try:
+        state[room]
+    except Exception:
+        read_room_db(room)
     # drop user on bad DB request
     if (not state[room]):
         disconnect()
@@ -190,7 +192,7 @@ def on_leave(data):
 #
 #     },
 # }
-state = dict()
+
 
 
 @socketio.on('add_comment')
