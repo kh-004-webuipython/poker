@@ -10,3 +10,7 @@ python-socketio==1.7.2
 six==1.10.0
 PyMongo==3.4.0
 flask-pymongo==0.4.1
+
+gevent==1.2.1
+greenlet==0.4.12
+gunicorn==19.7.1

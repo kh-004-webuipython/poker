@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+*.py~
 *.sqlite3
 my_redis.db*
 .idea

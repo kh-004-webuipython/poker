@@ -14,7 +14,7 @@ app.config['MONGO_DBNAME'] = 'pocker_db'
 app.config['MONGO_URI'] = 'mongodb://admin:pockeradmin@ds139480.mlab.com' \
                           ':39480/pocker_db'
 
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+app.config.from_envvar('POKER_SETTINGS', silent=True)
 
 
 room_db = PyMongo(app)
@@ -55,10 +55,10 @@ def read_room_db(project_id):
     return state
 
 # global room
-@app.route('/')
-def main_page():
-    # change 1 for dynamic id
-    return render_template('index.html')
+#@app.route('/')
+#def main_page():
+#    # change 1 for dynamic id
+#    return render_template('index.html')
 
 
 # room page
