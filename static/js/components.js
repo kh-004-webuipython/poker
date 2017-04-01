@@ -19,10 +19,16 @@ function progressBar(x) {
     if (!isNumber(x)) {
         return 0
     }
-    let width = 56 * cardList.indexOf(Number(x));
-    return width
-
+    return 56 * cardList.indexOf(Number(x));
 }
+
+    //*********************************
+    // поднять на уровень выше юзелист и флип
+    // настроить фласк в облаке
+    // добавить авторизацию
+    // добавить очистку "состояния румы", если из нее все вышли
+
+
 
 if (location.pathname.substr(1,4) === 'room') {
     ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
@@ -43,16 +49,6 @@ socket.on('start_data', (data) => {
     	}
     	return true;
     }) ();
-
-    //*********************************
-    // поднять на уровень выше юзелист и флип
-    // Определиться с дизайном естимейшен аксепт
-    // пересадить большую часть интерфейса на таблицы
-    // настроить фласк в облаке
-
-    // добавить авторизацию
-    // добавить очистку "состояния румы", если из нее все вышли
-
 
 class PokerBox extends React.Component {
     render() {
@@ -347,17 +343,17 @@ class IssueBox extends React.Component {
 
         socket.on('issue_was_estimated', (data)=> {
             this._userList = data.users;
-            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues});
+            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues, 'vote': ''});
         });
 
         socket.on('skip_estimation', (users)=> {
             this._userList = users;
-            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('skip')});
+            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('skip'), 'vote': ''});
         });
 
         socket.on('reset_estimation', (users)=> {
             this._userList = users;
-            this.setState({'flip': false, 'currentSlide': 'active', 'vote':''});
+            this.setState({'flip': false, 'currentSlide': 'active', 'vote': ''});
         });
     }
 
