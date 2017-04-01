@@ -133,65 +133,130 @@ def on_leave(data):
     send('user has left the room.', room=room)
 
 
-# state = {
-#     'room_500': {
-#         'user_list': [
-#             {
-#                 'id': 1,
-#                 'name': 'phobos',
-#                 'role': 'developer',
-#                 'current_vote': ''
-#             },
-#             {
-#                 'id': 2,
-#                 'name': 'scrum_name',
-#                 'role': 'scrum',
-#                 'current_vote': ''
-#             },
-#
-#         ],
-#         'issue_list': [
-#             {
-#                 'id': 1,
-#                 'title': 'Fix Email Notification(Issues change)',
-#                 'description': 'Email notification has to work for: 1) ' +
-#                                'Employee was assigned to the issue. 2) ' +
-#                                'Employee that was assigned to the issue, ' +
-#                                'now is not assigned to the issue. 3) If ' +
-#                                'issue was changed in any way, it sends to ' +
-#                                'assigned issue employee. if NOTHING is ' +
-#                                'changed, do not send anything.',
-#                 'estimation': '',
-#             },
-#             {
-#                 'id': 2,
-#                 'title': 'Profile access',
-#                 'description': 'Make access to user profile via dropdown(as it was before) and make it bigger',
-#                 'estimation': 10,
-#             },
-#             {
-#                 'id': 3,
-#                 'title': 'title3',
-#                 'description': 'description3',
-#                 'estimation':'',
-#             },
-#
-#         ],
-#         'chat_log': [
-#             {
-#                 'id': 1,
-#                 'user': 'phobos',
-#                 'body': ' xxxxxxxxxxxxx'
-#             },
-#             {
-#                 'id': 2,
-#                 'user': 'scrum',
-#                 'body': 'zzzzzzzz'
-#             },
-#         ]
-#
-#     },
-# }
+state = {
+    500: {
+        'user_list': [
+            {
+                'id': 1,
+                'name': 'phobos',
+                'role': 'developer',
+                'current_vote': ''
+            },
+            {
+                'id': 2,
+                'name': 'scrum_name',
+                'role': 'scrum',
+                'current_vote': ''
+            },
+
+        ],
+        'issue_list': [
+            {
+                'id': 1,
+                'title': 'Fix Email Notification(Issues change)',
+                'description': 'Email notification has to work for: 1) ' +
+                               'Employee was assigned to the issue. 2) ' +
+                               'Employee that was assigned to the issue, ' +
+                               'now is not assigned to the issue. 3) If ' +
+                               'issue was changed in any way, it sends to ' +
+                               'assigned issue employee. if NOTHING is ' +
+'Employee was assigned to the issue. 2) ' +
+                               'Employee that was assigned to the issue, ' +
+                               'now is not assigned to the issue. 3) If ' +
+                               'issue was changed in any way, it sends to ' +
+                               'assigned issue employee. if NOTHING is ' +
+                               'changed, do not send anything.',
+                'estimation': '',
+            },
+            {
+                'id': 2,
+                'title': 'Profile access',
+                'description': 'Make access to user profile via dropdown(as it was before) and make it bigger',
+                'estimation': 10,
+            },
+            {
+                'id': 3,
+                'title': 'title3',
+                'description': 'description3',
+                'estimation':'',
+            },
+            {
+                'id': 4,
+                'title': 'title4',
+                'description': 'description4',
+                'estimation': '',
+            },
+            {
+                'id': 5,
+                'title': 'title5',
+                'description': 'description5',
+                'estimation': '',
+            },
+            {
+                'id': 6,
+                'title': 'title6',
+                'description': 'description6',
+                'estimation': '',
+            },
+            {
+                'id': 7,
+                'title': 'title7',
+                'description': 'description7',
+                'estimation': '',
+            },
+            {
+                'id': 8,
+                'title': 'title8',
+                'description': 'description8',
+                'estimation': '',
+            },
+            {
+                'id': 9,
+                'title': 'title9',
+                'description': 'description9',
+                'estimation': '',
+            },            {
+                'id': 10,
+                'title': 'title10',
+                'description': 'description10',
+                'estimation':'',
+            },
+            {
+                'id':11,
+                'title': 'title11',
+                'description': 'description11',
+                'estimation': '',
+            },
+            {
+                'id': 12,
+                'title': 'title12',
+                'description': 'description12',
+                'estimation': '',
+            },
+            {
+                'id': 13,
+                'title': 'title13',
+                'description': 'description13',
+                'estimation': '',
+            },
+
+
+        ],
+        'chat_log': [
+            {
+                'id': 1,
+                'user': 'phobos',
+                'body': ' xxxxxxxxxxxxx'
+            },
+            {
+                'id': 2,
+                'user': 'scrum',
+                'body': 'zzzzzzzz'
+            },
+        ]
+
+    },
+}
 
 
 
