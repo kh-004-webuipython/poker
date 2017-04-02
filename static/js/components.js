@@ -1,9 +1,13 @@
 //const USER = 'phobos';
 //const USER_ID = 1;
-const USER_ID = 12;
-//const ROOM = document.querySelector('body').dataset['room'];
+const USER_ID = Number(prompt());
+//const USER_ID = 1;
+//const USER_ID = document.querySelector('body').dataset['id'];
+const USER = document.getElementById('poker-app').dataset['name'];
+
 let ROOM = '';
-const USER = USER_ID;
+//let USER = USER_ID;
+let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
 let startUserList = [];
 let startIssueList = [];
 let chatLog = [];
@@ -11,10 +15,25 @@ function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-///if (location.pathname.substr(1,4) === 'room') {
-///    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
-///}
-ROOM = 1
+function progressBar(x) {
+    if (!isNumber(x)) {
+        return 0
+    }
+    return 56 * cardList.indexOf(Number(x));
+}
+
+    //*********************************
+    // поднять на уровень выше юзелист и флип
+    // настроить фласк в облаке
+    // добавить авторизацию
+    // добавить очистку "состояния румы", если из нее все вышли
+
+
+
+if (location.pathname.substr(1,4) === 'room') {
+    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
+}
+
 let socket = io.connect('http://127.0.0.1:5000');
 socket.on('connect', () => socket.emit('join',{'room': ROOM}));
 
@@ -23,33 +42,13 @@ socket.on('start_data', (data) => {
     startIssueList = data.issue_list;
     chatLog = data.chat_log;
     let startFlip = (() => {
-    	for (var i = 0; i < startUserList.length; i++) {
+    	for (let i = 0; i < startUserList.length; i++) {
     		if (startUserList[i].current_vote === '') {
     			return false;
     		}
     	}
     	return true;
     }) ();
-
-    //*********************************
-    // поднять на уровень выше юзелист и флип
-    // Определиться с дизайном естимейшен аксепт
-    // написать функцию резет воута, которая будет использоваться при повторном голосвании и успешном сохранении сервером естимешена
-    // пересадить большую часть интерфейса на таблицы
-    // поставить вебсокет на новые колеса: gevent + gunicorn + Nginx
-    // настроить фласк в облаке
-
-    // добавить авторизацию
-    // добавить румы
-    // прикрутить ДБ в которую будет записываться рума и потом в нее будут добавляться/удаляться ишью
-    // добавить очистку "состояния румы", если из нее все вышли
-
-
-let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
-let status = {
-    'flip': true,
-};
-
 
 class PokerBox extends React.Component {
     render() {
@@ -58,8 +57,12 @@ class PokerBox extends React.Component {
                 <h3>Jiller planning poker service
                     <div className="profile">{USER}</div>
                 </h3>
-                <IssueBox />
-                <UserBox />
+                <div className="mark-borders">
+                    <div className="col-md-9 main-block">
+                        <IssueBox />
+                    </div>
+                    <UserBox />
+                </div>
                 <CommentBox />
             </div>
         );
@@ -84,7 +87,7 @@ class UserBox extends React.Component {
         user online</h4>*/
 
         return (
-            <div className="user-box col-md-3 col-sm-2 pull-right">
+            <div className="user-box col-md-3">
                 <div className="user-list info info-striped">
                     <div className="info-row">
                         <div className="col-md-8 info-name">Teammates</div>
@@ -164,9 +167,10 @@ class IssueBox extends React.Component {
         if (this.state.currentIssue && this.state.currentSlide == 'active') {
         //current issue slide
             return (
-                <div className="main-block col-md-9">
-                    <div className="info info-striped overflow">
-                        <div className="info-row ">
+                <div className="">
+                    <div className="main-issue-overflow">
+                    <div className="info info-striped">
+                        <div className="info-row">
                             <div className="info-name">Issue on estimation:</div>
                             <div className="info-value">{this.state.currentIssue.title}</div>
                         </div>
@@ -175,6 +179,7 @@ class IssueBox extends React.Component {
                             <div className="info-value overflow">{this.state.currentIssue.description}</div>
                         </div>
                     </div>
+                        </div>
                     <CardBox vote={this.state.vote} flip={this.state.flip} saveVote={this._setVote.bind(this)} />
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
@@ -182,26 +187,31 @@ class IssueBox extends React.Component {
         }
 
         if (this.state.currentIssue && this.state.currentSlide == 'accept') {
-        //current issue slide
+            //current issue slide
+            let diagram = this._getDiagram();
             return (
-                <div className="main-block col-md-9">
-                    <div className="info info-striped overflow">
-                        <div className="info-row">
-                            <div className="info-name">Issue on estimation:</div>
-                            <div className="info-value">{this.state.currentIssue.title}</div>
+                <div className="">
+                    <div id="issue-container">
+                        <div className="main-issue-overflow">
+                            <div className="info info-striped">
+                                <div className="info-row">
+                                    <div className="info-name">Issue on estimation:</div>
+                                    <div className="info-value">{this.state.currentIssue.title}</div>
+                                </div>
+                                <div className="info-row">
+                                    <div className="info-name">Description:</div>
+                                    <div className="info-value">{this.state.currentIssue.description}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="info-row">
-                            <div className="info-name">Description:</div>
-                            <div className="info-value">{this.state.currentIssue.description}</div>
-                        </div>
-                    </div>
-                    <div>СТАТИСТИКА</div>
-
                     <div>
-                        <p>Estimation manager</p>
-                        <button className={this._checkBtn('accept')} onClick={this._estimationAccept.bind(this)}>Accept issue estimation</button>
-                        <button className="btn btn-default" onClick={this._estimationReset.bind(this)}>Reset votes</button>
-                        <button className="btn btn-default" onClick={this._estimationSkip.bind(this, 'skip')}>Skip issue</button>
+                        <div className="acceptManager">
+                            <button className={this._checkBtn('accept')} onClick={this._estimationAccept.bind(this)}>Accept issue estimation</button>
+                            <button className="btn btn-default" onClick={this._estimationReset.bind(this)}>Reset votes</button>
+                            <button className="btn btn-default" onClick={this._estimationSkip.bind(this, 'skip')}>Skip issue</button>
+                        </div>
+                        {this.state.flip? diagram : <p>Diagram can be shown only after all teammates have voted</p>}
+                    </div>
                     </div>
                     <IssueNavbar activeSlide = {this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
@@ -210,36 +220,50 @@ class IssueBox extends React.Component {
 
         if (this.state.currentSlide == 'completed') {
         //current issue slide
-            return (
-                <div className="main-block col-md-9 overflow">
+            return (<div className="">
+                <div id="issue-container" className="overflow">
+                    <div className="info info-striped">
+                        <div className="info-row flex">
+                            <div className="info-name col-md-1">id</div>
+                            <div className="info-value col-md-2">Title</div>
+                            <div className="info-value col-md-8">Description</div>
+                            <div className="info-value col-md-1">Estim.</div>
+                        </div>
                 {
                 this.state.issueList.filter(x=>x['estimation']).map((issue, index) => {
-                return (<div className="info info-striped" key={index}>
-                    <div className="info-row flex">
-                        <div className="info-name col-md-1">{index+1}</div>
+                return (<div className="info-row flex" key={index}>
+                        <div className="info-name col-md-1">{issue.id}</div>
                         <div className="info-value col-md-2">{issue.title}</div>
                         <div className="info-value col-md-8">{issue.description}</div>
                         <div className="info-value col-md-1">{issue.estimation}</div>
-                    </div>
-                    </div>)
+                        </div>)
                 })
                 }
+                    </div>
+                </div>
                 <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
              </div>)
         }
 
         if (this.state.currentSlide == 'all') {
         //current issue slide
-            return (<div className="main-block col-md-9 overflow">
-                <div className="info info-striped">
+            return (
+                <div className="">
+                    <div id="issue-container" className="info info-striped  overflow">
+                        <div className="info-row flex">
+                            <div className="info-name col-md-1">id</div>
+                            <div className="info-value col-md-2">Title</div>
+                            <div className="info-value col-md-8">Description</div>
+                            <div className="info-value col-md-1">Estim.</div>
+                        </div>
                 {
                 this.state.issueList.map((issue, index) => {
                 return (<div className="info-row flex" key={index}>
-                    <div className="info-name col-md-1">{index+1}</div>
-                    <div className="info-value col-md-2">{issue.title}</div>
-                    <div className="info-value col-md-8">{issue.description}</div>
-                    <div className="info-value col-md-1">{issue.estimation}</div>
-                    </div>)
+                        <div className="info-name col-md-1">{issue.id}</div>
+                        <div className="info-value col-md-2">{issue.title}</div>
+                        <div className="info-value col-md-8">{issue.description}</div>
+                        <div className="info-value col-md-1">{issue.estimation}</div>
+                        </div>)
                 })
                 }
                 </div>
@@ -248,9 +272,11 @@ class IssueBox extends React.Component {
         } else {
         //current issue slide
             return (
-                <div className="main-block col-md-9">
-                    <div className="info info-striped overflow">
-                        <p className="text-center">No Issues to estimate</p>
+                <div className="">
+                    <div id="issue-container" className="info info-striped  overflow">
+                        <div className="info-row flex">
+                        <p className="block-center">No Issues to estimate</p>
+                    </div>
                     </div>
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
@@ -268,7 +294,14 @@ class IssueBox extends React.Component {
 
     _checkBtn(btn) {
         if (btn == 'accept') {
-            return this.state.flip ? "btn btn-success" : "btn btn-danger";
+            let sameVOte = true;
+            let num = isNumber(this._userList[0].current_vote);
+            for(let i = 1; i < this._userList.length; i++) {
+	            if (this._userList[i - 1].current_vote !== this._userList[i].current_vote) {
+		            sameVOte = false;
+	            }
+            }
+            return this.state.flip && sameVOte && num? "btn btn-success" : "btn btn-danger";
         }
     }
 
@@ -283,7 +316,7 @@ class IssueBox extends React.Component {
 
             if (isNumber(this._userList[0].current_vote)) {
                 let issue = this.state.currentIssue;
-                let vote = this._userList[0].current_vote
+                let vote = this._userList[0].current_vote;
                 socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': vote, 'room': ROOM});
             }
         } else {
@@ -312,17 +345,17 @@ class IssueBox extends React.Component {
 
         socket.on('issue_was_estimated', (data)=> {
             this._userList = data.users;
-            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues});
+            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('save'), 'issueList': data.issues, 'vote': ''});
         });
 
         socket.on('skip_estimation', (users)=> {
             this._userList = users;
-            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('skip')});
+            this.setState({'flip': false, 'currentSlide': 'active', 'currentIssue': this._next('skip'), 'vote': ''});
         });
 
         socket.on('reset_estimation', (users)=> {
             this._userList = users;
-            this.setState({'flip': false, 'currentSlide': 'active'});
+            this.setState({'flip': false, 'currentSlide': 'active', 'vote': ''});
         });
     }
 
@@ -344,6 +377,26 @@ class IssueBox extends React.Component {
             return noEstimatedIssue[0]
         }
     }
+
+    _getDiagram() {
+        return <table className="table-bordered diagram">
+            <tbody>
+            {this._userList.slice().sort((a,b)=>Number(a.current_vote)>Number(b.current_vote)).map(user => {
+	            return (
+                    <tr className="col-md-12 test" key={user.id}>
+                        <td className="col-md-3">{user.name}</td>
+                        <td className="col-md-1 text-center">{user.current_vote}</td>
+                        <td className="col-md-8">
+                            <div className="est-bar" style={{width: progressBar(user.current_vote) +'px'}}>
+                            </div>
+                        </td>
+                    </tr>
+	            );
+            })
+            }
+            </tbody>
+        </table>
+    };
 }
 
 
@@ -379,8 +432,8 @@ class IssueNavbar extends React.Component {
         return (
             <div className="issue-bar">
                 <button className={this._checkActiveBtn('active')} onClick = {this.props.setSlide.bind(this, 'active')}>Active issue</button>
-                <button className={this._checkActiveBtn('accept')} onClick = {this.props.setSlide.bind(this, 'accept')}>Accept vote</button>
-                <button className={this._checkActiveBtn('completed')} onClick = {this.props.setSlide.bind(this, 'completed')}>Completed issue</button>
+                <button className={this._checkActiveBtn('accept')} onClick = {this.props.setSlide.bind(this, 'accept')}>Vote menu</button>
+                <button className={this._checkActiveBtn('completed')} onClick = {this.props.setSlide.bind(this, 'completed')}>Estimated issue</button>
                 <button className={this._checkActiveBtn('all')} onClick = {this.props.setSlide.bind(this, 'all')}>All issue list</button>
             </div>
         )
@@ -405,7 +458,7 @@ class CommentBox extends React.Component {
     render() {
         let comments = this._getComments();
         return (
-            <div className="col-md-12 col-sm-10 chat-box">
+            <div className="col-md-12 chat-box">
                 <CommentForm addComment={this._sendComment.bind(this)}/>
                 <div className="comment-box"> { comments } </div>
             </div>
@@ -423,7 +476,7 @@ class CommentBox extends React.Component {
     }
 
     _getComments() {
-        return this.state.comments.map(comment => {
+        return this.state.comments.slice().reverse().map(comment => {
             return (
                 <Comment
                     user={comment.user}

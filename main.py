@@ -216,6 +216,9 @@ def on_leave(data):
 #
 #     },
 # }
+
+
+
 @socketio.on('add_comment')
 def handle_add_comment(data):
     room = int(data['room'])
