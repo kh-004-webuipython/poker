@@ -1,8 +1,6 @@
 //const USER = 'phobos';
 //const USER_ID = 1;
 const USER_ID = 12;
-//const USER_ID = document.querySelector('body').dataset['user_id'];
-alert(USER_ID);
 //const ROOM = document.querySelector('body').dataset['room'];
 let ROOM = '';
 const USER = USER_ID;
@@ -13,10 +11,10 @@ function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-if (location.pathname.substr(1,4) === 'room') {
-    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
-}
-
+///if (location.pathname.substr(1,4) === 'room') {
+///    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
+///}
+ROOM = 1
 let socket = io.connect('http://127.0.0.1:5000');
 socket.on('connect', () => socket.emit('join',{'room': ROOM}));
 
