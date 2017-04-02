@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, make_response, redirect, \
+    session
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
 from flask_pymongo import PyMongo
 from random import choice
@@ -10,7 +11,8 @@ app.config['MONGO_DBNAME'] = 'pdb'
 app.config['MONGO_URI'] = 'mongodb://admin:adminpass@ds149040.mlab.com:49040' \
                           '/pdb'
 
-
+app.config['SECRET_KEY'] = 'something unique and secret'
+app.config['SESSION_REFRESH_EACH_REQUEST'] = False
 app.config.from_envvar('POKER_SETTINGS', silent=True)
 
 
@@ -83,31 +85,26 @@ def read_room_db(project_id):
 
 
 # room page
-@app.route('/room/<room_name>/', methods=['GET'])
-def main_room_page(room_name=None):
-    user_id = request.headers.get('user_id')
-    # if not user_id:
-    #     return redirect('http://localhost:8000/')
-    # user_id = json['Authorization']['username']
+# @app.route('/room/<room_name>/', methods=['GET'])
+# def main_room_page(room_name=None, user_id=''):
+#     room_name = request.headers.get('room_name')
+#     user_id = request.headers.get('user_id')
+#     return render_template('index.html', room_name=str(room_name),
+#                            user_id=str(user_id))
+
+
+@app.route('/room/<room_name>/user/<user_id>', methods=['GET'])
+def room_page(room_name=None, user_id=''):
     return render_template('index.html', room_name=str(room_name),
                            user_id=str(user_id))
 
 
 @app.route('/create_room/', methods=['POST'])
 def create_room():
-    # change for url from jiller
-    url = 'http:// localhost: 8000/'
     issue_json = request.get_json(force='True')
     create_room_db(issue_json)
-    return redirect(url)
 
-
-'''
-    headers = {'Content-Type': 'application/json',
-               'user_id': request.session['user_id']}
-
-request.session['user_id'] = str(user.pk)
-'''
+    return redirect(request.referrer)
 
 
 @app.route('/add_issue/', methods=['POST'])
@@ -116,16 +113,16 @@ def add_issue():
     issue = room_db.db.issues
     for issues in issue_json:
         try:
-            q = issue.find_one({'project_id': int(issues["project_id"]),
-                                'id': int(issues['id'])})
+            q = issue.find_one({'project_id': issues["project_id"],
+                                'id': issues['id']})
         except Exception:
             print ("Can't read database")
         else:
             if not q:
                 issue.insert_one(issues)
-
-    url = '/room/' + str(issue_json[0]["project_id"]) + '/'
-    return redirect(url)
+    return redirect(request.referrer)
+    # url = '/room/' + str(issue_json[0]["project_id"]) + '/'
+    # return redirect(url)
 
 
 @socketio.on('join')

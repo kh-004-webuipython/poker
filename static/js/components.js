@@ -1,6 +1,8 @@
 //const USER = 'phobos';
 //const USER_ID = 1;
-const USER_ID = Number(prompt());
+const USER_ID = 12;
+//const USER_ID = document.querySelector('body').dataset['user_id'];
+alert(USER_ID);
 //const ROOM = document.querySelector('body').dataset['room'];
 let ROOM = '';
 const USER = USER_ID;
