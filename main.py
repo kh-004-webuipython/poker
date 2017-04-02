@@ -6,9 +6,10 @@ from random import choice
 
 
 app = Flask(__name__)
-app.config['MONGO_DBNAME'] = 'pocker_db'
-app.config['MONGO_URI'] = 'mongodb://db_admin:db_pass@ds145380.mlab.com' \
-                          ':45380/pocker_db'
+app.config['MONGO_DBNAME'] = 'pdb'
+app.config['MONGO_URI'] = 'mongodb://admin:adminpass@ds149040.mlab.com:49040' \
+                          '/pdb'
+
 
 app.config.from_envvar('POKER_SETTINGS', silent=True)
 
@@ -20,60 +21,73 @@ state = dict()
 
 def create_room_db(issue_json):
     room = room_db.db.rooms
-    if issue_json.get('issues'):
-        for issue in issue_json:
-            issue['estimation'] = ''
     try:
         q = room.find_one({'project_id': int(issue_json["project_id"])})
     except Exception:
         print("Can't read database")
     else:
         if not q:
+            for teammate in issue_json['team']:
+                teammate['role'] = ''
+                teammate['current_vote'] = ''
             room.insert_one(issue_json)
     return True
 
 
+# def update_state(q):
+#     issue_list = []
+#     for issue in q['issues']:
+#         issue_list.append({'id': issue['id'],
+#                            'title': issue['title'],
+#                            'description': issue['description'],
+#                            'estimation': issue['estimation']})
+#     user_list = []
+#     for teammate in q['team']:
+#         user_list.append({'id': teammate['id'],
+#                           'name': teammate['name'],
+#                           'role': '',
+#                           'current_vote': ''})
+#     state_dict = {
+#         "user_list": user_list,
+#         "issue_list": issue_list,
+#         "chat_log": []
+#     }
+#     return state_dict
 def update_state(q):
-    issue_list = []
-    for issue in q['issues']:
-        issue_list.append({'id': issue['id'],
-                           'title': issue['title'],
-                           'description': issue['description'],
-                           'estimation': issue['estimation']})
-    user_list = []
-    for teammate in q['team']:
-        user_list.append({'id': teammate['id'],
-                          'name': teammate['name'],
-                          'role': '',
-                          'current_vote': ''})
-    state_dict = {
-        "user_list": user_list,
-        "issue_list": issue_list,
-        "chat_log": []
-    }
-    return state_dict
+    state_list = []
+    for items in q:
+        state_list.append(items)
+    return state_list
 
 
 def read_room_db(project_id):
     room = room_db.db.rooms
+    issue = room_db.db.issues
     id = int(project_id)
+    global state
     try:
-        q = room.find_one({'project_id': id}, {'issues': 1,
-                                               'team': 1,
-                                               '_id': 0})
-        state[id] = update_state(q)
+        q_team = room.find_one({'project_id': id}, {'team': 1, '_id': 0})
+        q = issue.find({'project_id': id}, {'id': 1, '_id': 0, 'title': 1,
+                                            'estimation': 1, 'description': 1})
     except Exception:
         print ("Can't read database")
         disconnect()
-    return True
+    else:
+        state[id] = {
+            "user_list": q_team['team'],
+            "issue_list":  update_state(q),
+            "chat_log": []
+        }
+        return True
+    return False
 
 
 # room page
 @app.route('/room/<room_name>/', methods=['GET'])
 def main_room_page(room_name=None):
     user_id = request.headers.get('user_id')
-    if not user_id:
-        return redirect('http://localhost:8000/')
+    # if not user_id:
+    #     return redirect('http://localhost:8000/')
     # user_id = json['Authorization']['username']
     return render_template('index.html', room_name=str(room_name),
                            user_id=str(user_id))
@@ -81,26 +95,36 @@ def main_room_page(room_name=None):
 
 @app.route('/create_room/', methods=['POST'])
 def create_room():
+    # change for url from jiller
+    url = 'http:// localhost: 8000/'
     issue_json = request.get_json(force='True')
     create_room_db(issue_json)
-    room_name = int(issue_json['project_id'])
-    url = '/room/' + str(room_name) + '/'
     return redirect(url)
+
+
+'''
+    headers = {'Content-Type': 'application/json',
+               'user_id': request.session['user_id']}
+
+request.session['user_id'] = str(user.pk)
+'''
 
 
 @app.route('/add_issue/', methods=['POST'])
 def add_issue():
     issue_json = request.get_json(force='True')
-    room = room_db.db.rooms
-    try:
-        q = room.find_one({'project_id': int(issue_json["project_id"])})
-        room.update(q, {'$set': {'issues': {'$each': [1, 3]}}})
-    except Exception:
-        print ("Can't read database")
-    else:
-        print ('OK')
+    issue = room_db.db.issues
+    for issues in issue_json:
+        try:
+            q = issue.find_one({'project_id': int(issues["project_id"]),
+                                'id': int(issues['id'])})
+        except Exception:
+            print ("Can't read database")
+        else:
+            if not q:
+                issue.insert_one(issues)
 
-    url = '/room/' + str(issue_json["project_id"]) + '/'
+    url = '/room/' + str(issue_json[0]["project_id"]) + '/'
     return redirect(url)
 
 
@@ -113,6 +137,7 @@ def on_join(data):
     try:
         state[room]
     except Exception:
+        state[room] = dict()
         read_room_db(room)
     # drop user on bad DB request
     if not state[room]:
