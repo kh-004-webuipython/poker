@@ -110,7 +110,7 @@ def on_join(data):
     join_room(room)
     try:
         state[room]
-    except Exception:
+    except:
         read_room_db(room)
     # drop user on bad DB request
     if (not state[room]):
@@ -203,7 +203,7 @@ def on_leave(data):
 #                'description': 'descripatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qution6',
 #                'estimation': '',
 #            },
-
+#
 #        ],
 #        'chat_log': []
 #

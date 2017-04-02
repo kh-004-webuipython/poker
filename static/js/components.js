@@ -272,9 +272,11 @@ class IssueBox extends React.Component {
         } else {
         //current issue slide
             return (
-                <div className="main-block col-md-9">
-                    <div className="info info-striped overflow">
-                        <p className="text-center">No Issues to estimate</p>
+                <div className="">
+                    <div id="issue-container" className="info info-striped  overflow">
+                        <div className="info-row flex">
+                        <p className="block-center">No Issues to estimate</p>
+                    </div>
                     </div>
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
@@ -379,7 +381,7 @@ class IssueBox extends React.Component {
     _getDiagram() {
         return <table className="table-bordered diagram">
             <tbody>
-            {this._userList.slice().sort((a,b)=>a.current_vote>b.current_vote).map(user => {
+            {this._userList.slice().sort((a,b)=>Number(a.current_vote)>Number(b.current_vote)).map(user => {
 	            return (
                     <tr className="col-md-12 test" key={user.id}>
                         <td className="col-md-3">{user.name}</td>
