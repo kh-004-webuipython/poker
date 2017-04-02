@@ -246,3 +246,7 @@ div.comment-box div.comment :nth-child(even) {
 .acceptManager {
     padding: 15px;
 }
+
+.block-center {
+    margin: 0 auto;
+}
