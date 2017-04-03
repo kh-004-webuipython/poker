@@ -74,10 +74,6 @@
 	    return 56 * cardList.indexOf(Number(x));
 	}
 
-//	if (location.pathname.substr(1, 4) === 'room') {
-//	    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
-//	}
-
 	var socket = io.connect('http://127.0.0.1:5000');
 	socket.on('connect', function () {
 	    return socket.emit('join', { 'room': ROOM , 'user_id': USER_ID,
@@ -497,57 +493,61 @@
 	                        { className: '' },
 	                        React.createElement(
 	                            'div',
-	                            { id: 'issue-container', className: 'info info-striped  overflow' },
+	                            { id: 'issue-container', className: 'overflow' },
 	                            React.createElement(
 	                                'div',
-	                                { className: 'info-row flex' },
+	                                { className: 'info info-striped' },
 	                                React.createElement(
 	                                    'div',
-	                                    { className: 'info-name col-md-1' },
-	                                    'id'
-	                                ),
-	                                React.createElement(
-	                                    'div',
-	                                    { className: 'info-value col-md-2' },
-	                                    'Title'
-	                                ),
-	                                React.createElement(
-	                                    'div',
-	                                    { className: 'info-value col-md-8' },
-	                                    'Description'
-	                                ),
-	                                React.createElement(
-	                                    'div',
-	                                    { className: 'info-value col-md-1' },
-	                                    'Estim.'
-	                                )
-	                            ),
-	                            this.state.issueList.map(function (issue, index) {
-	                                return React.createElement(
-	                                    'div',
-	                                    { className: 'info-row flex', key: index },
+	                                    { className: 'info-row flex' },
 	                                    React.createElement(
 	                                        'div',
 	                                        { className: 'info-name col-md-1' },
-	                                        issue.id
+	                                        'id'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
 	                                        { className: 'info-value col-md-2' },
-	                                        issue.title
+	                                        'Title'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
 	                                        { className: 'info-value col-md-8' },
-	                                        issue.description
+	                                        'Description'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
 	                                        { className: 'info-value col-md-1' },
-	                                        issue.estimation
+	                                        'Estim.'
 	                                    )
-	                                );
-	                            })
+	                                ),
+	                                this.state.issueList.map(function (issue, index) {
+	                                    return React.createElement(
+	                                        'div',
+	                                        { className: 'info-row flex', key: index },
+	                                        React.createElement(
+	                                            'div',
+	                                            { className: 'info-name col-md-1' },
+	                                            issue.id
+	                                        ),
+	                                        React.createElement(
+	                                            'div',
+	                                            { className: 'info-value col-md-2' },
+	                                            issue.title
+	                                        ),
+	                                        React.createElement(
+	                                            'div',
+	                                            { className: 'info-value col-md-8' },
+	                                            issue.description
+	                                        ),
+	                                        React.createElement(
+	                                            'div',
+	                                            { className: 'info-value col-md-1' },
+	                                            issue.estimation
+	                                        )
+	                                    );
+	                                })
+	                            )
 	                        ),
 	                        React.createElement(IssueNavbar, { activeSlide: this.state.currentSlide, setSlide: this._setSlide.bind(this) })
 	                    );

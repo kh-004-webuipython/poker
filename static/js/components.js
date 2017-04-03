@@ -1,4 +1,3 @@
-//const USER_ID = Number(prompt());
 const USER_ID = document.querySelector('body').dataset['id'];
 
 const ROOM = document.querySelector('body').dataset['room'];
@@ -240,7 +239,8 @@ class IssueBox extends React.Component {
         //current issue slide
             return (
                 <div className="">
-                    <div id="issue-container" className="info info-striped  overflow">
+                    <div id="issue-container" className="overflow">
+                        <div className="info info-striped">
                         <div className="info-row flex">
                             <div className="info-name col-md-1">id</div>
                             <div className="info-value col-md-2">Title</div>
@@ -257,6 +257,7 @@ class IssueBox extends React.Component {
                         </div>)
                 })
                 }
+                </div>
                 </div>
                 <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
             </div>);

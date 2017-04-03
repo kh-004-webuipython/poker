@@ -79,7 +79,7 @@ def write_room_db(data):
     return True
 
 
-@app.route('/room/<room_name>/user/<user_id>', methods=['GET'])
+@app.route('/room/<room_name>/user/<user_id>/', methods=['GET'])
 def room_page(room_name=None, user_id=0):
     room = room_db.db.rooms
     try:
