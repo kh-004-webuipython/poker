@@ -8,7 +8,7 @@
 .profile {
     float: right;
     padding: 0 20px;
-    background-color: beige;
+    background-color: aliceblue;
 }
 
 #poker-app {
@@ -16,11 +16,9 @@
 }
 
 .user-box {
-    height: 490px;
+    max-height: 490px !important;
     margin: 0;
-    padding: 25px;
-    width: auto;
-    border: 1px solid lightsteelblue;
+    padding: 15px;
     overflow-y: auto;
 }
 
@@ -36,19 +34,30 @@
 
 .main-block {
     display: block;
-    height: 490px;
+    min-height: 475px !important;
     padding-top: 15px;
-    border: 1px solid lightsteelblue;
 }
 
+.main-issue-overflow > div {
+    height: 100%;
+}
+
+.mark-borders {
+    display: flex;
+    border-left: 1px solid lightsteelblue;
+    border-top: 1px solid lightsteelblue;
+    border-right: 1px solid lightsteelblue;
+}
 .overflow {
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-.info.info-striped.overflow {
-    display: inline-block;
-    height: 100px !important;
+.main-issue-overflow {
+    height: 130px !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-bottom: 1px solid #D5E4F1;
 }
 
 
@@ -80,6 +89,16 @@ div.comment-box div.comment :nth-child(even) {
     min-height: 300px;
 }
 
+.issue-container {
+    padding: 5px 14px 5px 5px;
+}
+
+#issue-container {
+    display: block;
+    height: 420px !important;
+    margin: 0;
+}
+
 .info {
     display: table;
     margin: 0 auto;
@@ -91,13 +110,13 @@ div.comment-box div.comment :nth-child(even) {
 }
 
 .info-row {
-    display: table-row;
+    display: table-header-group;
     padding: 0;
 }
 
 .info-name {
     text-align: right;
-    padding: 6px 10px 6px 4px;
+    padding: 3px;
     font-weight: normal;
     color: #667E99;
     background-color: transparent;
@@ -109,7 +128,7 @@ div.comment-box div.comment :nth-child(even) {
 .info-value {
     display: table-cell;
     width: 75%;
-    padding: 6px 4px 6px 6px;
+    padding: 3px;
     border-top: 1px dotted #D5E4F1;
     border-left: 1px dotted #D5E4F1;
 }
@@ -123,9 +142,9 @@ div.comment-box div.comment :nth-child(even) {
 
 .card {
     display: inline-block;
-    width: 110px;
-    height: 150px;
-    margin: 10px;
+    width: 100px;
+    height: 135px;
+    margin: 5px;
     padding: 5px;
     border: 1px solid black;
     border-radius: 5px;
@@ -143,18 +162,18 @@ div.comment-box div.comment :nth-child(even) {
 
 .card-center-data {
     display: block;
-    height: 100px;
-    width: 80px;
+    height: 85px;
+    width: 70px;
     margin: 0 auto;
     border: 1px solid black;
     border-radius: 5px;
-    line-height: 2.6;
+    line-height: 2.4;
     font-size: 36px;
 }
 
 .card-center-data .fa-coffee {
-    font-size: 1.6em;
-    line-height: 1.6;
+    font-size: 1.5em;
+    line-height: 1.5;
 }
 
 .chosen {
@@ -178,13 +197,56 @@ div.comment-box div.comment :nth-child(even) {
 }
 
 .issue-bar {
-    position: absolute;
-    bottom: 0;
     height: 30px;
     width: 100%;
-    margin: 5px 0;
+    margin: 2px;
 }
 
 .form-control, .btn {
     border-radius: 0 !important;
+}
+
+@media (min-width: 992px) {
+    .main-block {
+        border-right: 1px solid lightsteelblue;
+    }
+}
+
+@media (max-width: 991px) {
+    .main-block {
+        border-bottom: 1px solid lightsteelblue;
+    }
+}
+@media (max-width: 992px) {
+    .mark-borders {
+        display: block;
+    }
+}
+
+.est-bar {
+    border: 1px solid black;
+    display: block;
+    height: 15px;
+    background-color: #71ffc8;
+}
+
+.diagram {
+    width: 100%;
+}
+.diagram tr {
+    display: table;
+    width: 100%;
+    padding: 5px;
+}
+
+.diagram-name {
+    width: 50px;
+}
+
+.acceptManager {
+    padding: 15px;
+}
+
+.block-center {
+    margin: 0 auto;
 }
