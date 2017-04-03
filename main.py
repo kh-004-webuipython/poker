@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, redirect, abort
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
 from flask_pymongo import PyMongo
-from random import choice
+import requests
 
 
 app = Flask(__name__)
@@ -65,12 +65,26 @@ def read_room_db(project_id):
     return False
 
 
+def write_room_db(data):
+    issue = room_db.db.issues
+    global state
+    try:
+        q = issue.find_one({'project_id': (data['room']),
+                            'id': (data['issue_id'])})
+        issue.update(q, {'$set': {'estimation': int(data['estimation'])}})
+    except Exception:
+        print ("Can't write to database")
+        disconnect()
+        return False
+    return True
+
+
 @app.route('/room/<room_name>/user/<user_id>', methods=['GET'])
 def room_page(room_name=None, user_id=0):
     room = room_db.db.rooms
     try:
         q = room.find_one({'project_id': int(room_name)}, {'team':
-            {'$elemMatch':{'id': {'$eq': int(user_id)}}}, '_id': 0})
+            {'$elemMatch': {'id': {'$eq': int(user_id)}}}, '_id': 0})
         user_name = q['team'][0]['name']
     except Exception:
         return abort(400)
@@ -100,6 +114,24 @@ def add_issue():
             if not q:
                 issue.insert_one(issues)
     return redirect(request.referrer)
+
+
+@app.route('/save_issue/<int:issue_id>')
+def save_issue(issue_id):
+    # get issue
+    issues = room_db.db.issues
+    try:
+        current_issue = issues.find_one({'id': issue_id})
+    except:
+        print('cant read')
+    project_id = current_issue.get('project_id')
+    host = 'http://' + request.host.split(':')[
+        0] + ':8000/'
+    url = host + 'project/' + str(project_id) +'/issue/'+str(issue_id)
+    save_url = url + '/save_estimation/'
+
+    r = requests.post(save_url, data={'estimation': current_issue.get('estimation')})
+    return redirect('/room/' + str(project_id))
 
 
 @socketio.on('join')
@@ -157,22 +189,24 @@ def handle_vote(data):
 @socketio.on('accept_estimation')
 def handle_accept(data):
     room = int(data['room'])
+    write_room_db(data)
     issues = state[room]['issue_list']
-    # MAKE REST TO DJANGO AND ON success:
-        # DELETE ISSUE IN OUR DB
-    for issue in issues:
-        if issue['id'] == int(data['issue_id']):
-            issue['estimation'] = int(data['estimation'])
+
+    # for issue in issues:
+    #     if issue['id'] == int(data['issue_id']):
+    #         issue['estimation'] = int(data['estimation'])
+    #         write_room_db(room, issue)
+
+    # users = state[room]['user_list']
+    # for user in users:
+    #     user['current_vote'] = ''
 
     users = state[room]['user_list']
-    for user in users:
-        user['current_vote'] = ''
-
-    new_users = state[room]['user_list']
-    new_issues = state[room]['issue_list']
     del(state[room])
-    emit('issue_was_estimated', {'users': new_users, 'issues': new_issues},
+
+    emit('issue_was_estimated', {'users': users, 'issues': issues},
          room=room)
+    return redirect('/save_issue/' + str(data['issue_id']))
 
 
 @socketio.on('reset_estimation')
