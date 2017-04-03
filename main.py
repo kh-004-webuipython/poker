@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, make_response, redirect, \
-    session
+from flask import Flask, render_template, request, redirect, abort
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
 from flask_pymongo import PyMongo
 from random import choice
@@ -33,7 +32,8 @@ def create_room_db(issue_json):
                 teammate['role'] = ''
                 teammate['current_vote'] = ''
             room.insert_one(issue_json)
-    return True
+            return True
+    return False
 
 
 def update_state(q):
@@ -65,19 +65,17 @@ def read_room_db(project_id):
     return False
 
 
-# room page
-# @app.route('/room/<room_name>/', methods=['GET'])
-# def main_room_page(room_name=None, user_id=''):
-#     room_name = request.headers.get('room_name')
-#     user_id = request.headers.get('user_id')
-#     return render_template('index.html', room_name=str(room_name),
-#                            user_id=str(user_id))
-
-
 @app.route('/room/<room_name>/user/<user_id>', methods=['GET'])
-def room_page(room_name=None, user_id=''):
-    return render_template('index.html', room_name=str(room_name),
-                           user_id=str(user_id))
+def room_page(room_name=None, user_id=0):
+    room = room_db.db.rooms
+    try:
+        q = room.find_one({'project_id': int(room_name)}, {'team':
+            {'$elemMatch':{'id': {'$eq': int(user_id)}}}, '_id': 0})
+        user_name = q['team'][0]['name']
+    except Exception:
+        return abort(400)
+    return render_template('index.html', room_name=int(room_name),
+                           user_id=int(user_id), user_name=user_name)
 
 
 @app.route('/create_room/', methods=['POST'])
@@ -102,15 +100,12 @@ def add_issue():
             if not q:
                 issue.insert_one(issues)
     return redirect(request.referrer)
-    # url = '/room/' + str(issue_json[0]["project_id"]) + '/'
-    # return redirect(url)
 
 
 @socketio.on('join')
 def on_join(data):
-    #username = data['username']
     room = int(data['room'])
-    # if user in team:
+    username = data['name']
     join_room(room)
     try:
         state[room]
@@ -123,7 +118,7 @@ def on_join(data):
     emit('start_data', state[room])
     comment = dict()
     comment['id'] = len(state[room]['chat_log']) + 1
-    comment['body'] = 'user' + ' has entered the room.'
+    comment['body'] = username + ' has entered the room.'
     comment['user'] = 'Server'
     state[room]['chat_log'].append(comment)
     emit('add_new_comment', comment, room=room)
@@ -132,10 +127,10 @@ def on_join(data):
 @socketio.on('leave')
 def on_leave(data):
     # Need add event to clear room, when no one online
-    #username = data['username']
+    username = data['name']
     room = int(data['room'])
     leave_room(room)
-    send('user has left the room.', room=room)
+    send(username + ' has left the room.', room=room)
 
 
 @socketio.on('add_comment')
