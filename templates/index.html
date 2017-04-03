@@ -14,12 +14,11 @@
 <footer>
 <p class="text-center">Jiller inc</p>
 </footer>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/vendors/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendors/socket.io.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/vendors/bootstrap.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/vendors/react.js') }}"></script>
   <script src="{{ url_for('static', filename='js/vendors/react-dom.js') }}"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <script type="text/jsx" src="{{ url_for('static', filename='js/components.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
 </body>
 </html>
