@@ -133,82 +133,82 @@ def on_leave(data):
     send('user has left the room.', room=room)
 
 
-#state = {
-#    500: {
-#        'user_list': [
-#            {
-#                'id': 1,
-#                'name': 'phobos',
-#                'role': 'developer',
-#                'current_vote': ''
-#            },
-#            {
-#                'id': 2,
-#                'name': 'scrum_name',
-#                'role': 'developer',
-#                'current_vote': ''
-#            },
-#            {
-#                'id': 3,
-#                'name': 'john Smith',
-#                'role': 'developer',
-#                'current_vote': ''
-#            },
-#        ],
-#        'issue_list': [
-#            {
-#                'id': 1,
-#                'title': 'Fix Email Notification(Issues change)',
-#                'description': 'Email notification has to work for: 1) ' +
-#                               'Employee was assigned to the issue. 2) ' +
-#                               'Employee that was assigned to the issue, ' +
-#                               'now is not assigned to the issue. 3) If ' +
-#                               'issue was changed in any way, it sends to ' +
-#                               'assigned issue employee. if NOTHING is ' +
-#'Employee was assigned to the issue. 2) ' +
-#                               'Employee that was assigned to the issue, ' +
-#                               'now is not assigned to the issue. 3) If ' +
-#                               'issue was changed in any way, it sends to ' +
-#                               'assigned issue employee. if NOTHING is ' +
-#                               'changed, do not send anything.',
-#                'estimation': '',
-#            },
-#            {
-#                'id': 2,
-#                'title': 'Profiatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qule access',
-#                'description': 'Make acceuia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet, consectetur, adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut ee) and make it bigger',
-#                'estimation': 10,
-#            },
-#            {
-#                'id': 3,
-#                'title': 'titatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qule3',
-#                'description': 'datur aut odit aut fugit, sed quia consequuntur maatur aut odit aut fugit, sed quia consequuntur magni dolores eos, quatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qugni dolores eos, qu3',
-#                'estimation':'',
-#            },
-#            {
-#                'id': 4,
-#                'title': 'title4',
-#                'description': 'descripatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qution4',
-#                'estimation': '',
-#            },
-#            {
-#                'id': 5,
-#                'title': 'title5',
-#                'description': 'deatur aut odit aut fugit, sed quia consequuntur magni dolores eos, quion5',
-#                'estimation': '',
-#            },
-#            {
-#                'id': 6,
-#                'title': 'title6',
-#                'description': 'descripatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qution6',
-#                'estimation': '',
-#            },
-#
-#        ],
-#        'chat_log': []
-#
-#    },
-#}
+sgittate = {
+    500: {
+        'user_list': [
+            {
+                'id': 1,
+                'name': 'phobos',
+                'role': 'developer',
+                'current_vote': ''
+            },
+            {
+                'id': 2,
+                'name': 'scrum_name',
+                'role': 'developer',
+                'current_vote': ''
+            },
+            {
+                'id': 3,
+                'name': 'john Smith',
+                'role': 'developer',
+                'current_vote': ''
+            },
+        ],
+        'issue_list': [
+            {
+                'id': 1,
+                'title': 'Fix Email Notification(Issues change)',
+                'description': 'Email notification has to work for: 1) ' +
+                               'Employee was assigned to the issue. 2) ' +
+                               'Employee that was assigned to the issue, ' +
+                               'now is not assigned to the issue. 3) If ' +
+                               'issue was changed in any way, it sends to ' +
+                               'assigned issue employee. if NOTHING is ' +
+'Employee was assigned to the issue. 2) ' +
+                               'Employee that was assigned to the issue, ' +
+                               'now is not assigned to the issue. 3) If ' +
+                               'issue was changed in any way, it sends to ' +
+                               'assigned issue employee. if NOTHING is ' +
+                               'changed, do not send anything.',
+                'estimation': '',
+            },
+            {
+                'id': 2,
+                'title': 'Profiatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qule access',
+                'description': 'Make acceuia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet, consectetur, adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut ee) and make it bigger',
+                'estimation': 10,
+            },
+            {
+                'id': 3,
+                'title': 'titatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qule3',
+                'description': 'datur aut odit aut fugit, sed quia consequuntur maatur aut odit aut fugit, sed quia consequuntur magni dolores eos, quatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qugni dolores eos, qu3',
+                'estimation':'',
+            },
+            {
+                'id': 4,
+                'title': 'title4',
+                'description': 'descripatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qution4',
+                'estimation': '',
+            },
+            {
+                'id': 5,
+                'title': 'title5',
+                'description': 'deatur aut odit aut fugit, sed quia consequuntur magni dolores eos, quion5',
+                'estimation': '',
+            },
+            {
+                'id': 6,
+                'title': 'title6',
+                'description': 'descripatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qution6',
+                'estimation': '',
+            },
+
+        ],
+        'chat_log': []
+
+    },
+}
 
 
 
