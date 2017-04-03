@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
+import json
+
+import requests
+import sys
+from flask import Flask, render_template, request, jsonify, redirect
 from flask import Flask, render_template, request, make_response, redirect, \
     session
-from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
+from flask_socketio import SocketIO, send, emit, join_room, leave_room, \
+    disconnect
 from flask_pymongo import PyMongo
 from random import choice
-
 
 app = Flask(__name__)
 app.config['MONGO_DBNAME'] = 'pdb'
@@ -14,7 +19,6 @@ app.config['MONGO_URI'] = 'mongodb://admin:adminpass@ds149040.mlab.com:49040' \
 app.config['SECRET_KEY'] = 'something unique and secret'
 app.config['SESSION_REFRESH_EACH_REQUEST'] = False
 app.config.from_envvar('POKER_SETTINGS', silent=True)
-
 
 room_db = PyMongo(app)
 socketio = SocketIO(app)
@@ -58,7 +62,7 @@ def read_room_db(project_id):
     else:
         state[id] = {
             "user_list": q_team['team'],
-            "issue_list":  update_state(q),
+            "issue_list": update_state(q),
             "chat_log": []
         }
         return True
@@ -106,9 +110,27 @@ def add_issue():
     # return redirect(url)
 
 
+@app.route('/save_issue/<int:issue_id>')
+def save_issue(issue_id):
+    # get issue
+    issues = room_db.db.issues
+    try:
+        current_issue = issues.find_one({'id': issue_id})
+    except:
+        print('cant read')
+    project_id = current_issue.get('project_id')
+    host = 'http://' + request.host.split(':')[
+        0] + ':8000/'
+    url = host + 'project/' + str(project_id) +'/issue/'+str(issue_id)
+    save_url = url + '/save_estimation/'
+    # url = 'http://localhost:8000/project/1/issue/12/save_estimation/'
+    r = requests.post(save_url, data={'estimation': current_issue.get('estimation')})
+    return redirect(url)
+
+
 @socketio.on('join')
 def on_join(data):
-    #username = data['username']
+    # username = data['username']
     room = int(data['room'])
     # if user in team:
     join_room(room)
@@ -132,7 +154,7 @@ def on_join(data):
 @socketio.on('leave')
 def on_leave(data):
     # Need add event to clear room, when no one online
-    #username = data['username']
+    # username = data['username']
     room = int(data['room'])
     leave_room(room)
     send('user has left the room.', room=room)
@@ -164,7 +186,7 @@ def handle_accept(data):
     room = int(data['room'])
     issues = state[room]['issue_list']
     # MAKE REST TO DJANGO AND ON success:
-        # DELETE ISSUE IN OUR DB
+    # DELETE ISSUE IN OUR DB
     for issue in issues:
         if issue['id'] == int(data['issue_id']):
             issue['estimation'] = int(data['estimation'])
@@ -175,7 +197,7 @@ def handle_accept(data):
 
     new_users = state[room]['user_list']
     new_issues = state[room]['issue_list']
-    del(state[room])
+    del (state[room])
     emit('issue_was_estimated', {'users': new_users, 'issues': new_issues},
          room=room)
 
